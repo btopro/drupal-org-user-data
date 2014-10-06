@@ -10,7 +10,6 @@ define('DRUPAL_ORG_MAX_PER_BUILD', 10);
  * Implements hook_cron().
  */
 function drupal_org_user_data_cron() {
-  // @todo we need to cache these requests cause they can take awhile
   drupal_org_invalidate_cache();
 }
 

@@ -7,6 +7,12 @@
  * @return data           data in whatever format was just requested
  */
 function drupal_org_user_data_endpoint($name = NULL, $format = NULL) {
+  if (isset($_GET['orderby'])) {
+    $orderby = check_plain($_GET['orderby']);
+  }
+  else {
+    $orderby = 'downloads';
+  }
   $extra = array();
   if (empty($name)) {
     return drupal_render(drupal_get_form('drupal_org_user_data_rebuild_form'));
@@ -16,12 +22,12 @@ function drupal_org_user_data_endpoint($name = NULL, $format = NULL) {
   if (!isset($data)) {
     $data = _drupal_org_user_project_data($name, $extra);
   }
-  // sort by downloads
-  $downloads = array();
+  // sort by sortorder
+  $sortorder = array();
   foreach ($data as $key => $row) {
-    $downloads[$key]  = $row['downloads'];
+    $sortorder[$key]  = $row[$orderby];
   }
-  array_multisort($downloads, SORT_DESC, SORT_NUMERIC, $data);
+  array_multisort($sortorder, SORT_DESC, SORT_NUMERIC, $data);
   // display it in the format requested
   switch ($format) {
     case 'xml':
@@ -39,7 +45,15 @@ function drupal_org_user_data_endpoint($name = NULL, $format = NULL) {
         $link = DRUPAL_ORG_NAME_PATH . $name;
       }
       $output .= l(t('Learn more about @name on d.o.', array('@name' => $name)), $link);
-      $header = array("name", "project", "href", "commits", "downloads", "installs");
+      $path = current_path();
+      $header = array(
+        l('name', $path, array('query' => array('orderby' => 'name'))),
+        l('project', $path, array('query' => array('orderby' => 'project'))),
+        l('href', $path, array('query' => array('orderby' => 'href'))),
+        l('commits', $path, array('query' => array('orderby' => 'commits'))),
+        l('downloads', $path, array('query' => array('orderby' => 'downloads'))),
+        l('installs', $path, array('query' => array('orderby' => 'installs'))),
+      );
       // create the overview row at the footer
       $overview = array('Totals', 0, '');
       foreach ($data as $row) {
