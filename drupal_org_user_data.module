@@ -5,6 +5,7 @@ define('DRUPAL_ORG_NAME_PATH', 'http://drupal.org/u/');
 define('DRUPAL_ORG_USER_PATH', 'http://drupal.org/user/');
 
 define('DRUPAL_ORG_MAX_PER_BUILD', 10);
+define('DRUPAL_ORG_PROJECT_SELECTOR', 'ul.versioncontrol-project-user-commits li');
 
 /**
  * Implements hook_cron().
@@ -200,8 +201,8 @@ function _drupal_org_user_project_data($name = NULL, &$extra = array()) {
     // Remove all plain text fragments.
     $projects = array();
     $count = 0;
-    $extra['total'] = count($html_obj->find('dd ul li'));
-    foreach ($html_obj->find('dd ul li') as $plain_text_obj) {
+    $extra['total'] = count($html_obj->find(DRUPAL_ORG_PROJECT_SELECTOR));
+    foreach ($html_obj->find(DRUPAL_ORG_PROJECT_SELECTOR) as $plain_text_obj) {
       $tmp = $plain_text_obj->outertext;
       $split = explode('(', $tmp);
       $commits = explode(' ', array_pop($split));
@@ -463,7 +464,7 @@ function _drupal_org_load_user_data_batch($name) {
     // Remove all plain text fragments.
     $projects = array();
     $count = 0;
-    foreach ($html_obj->find('dd ul li') as $plain_text_obj) {
+    foreach ($html_obj->find(DRUPAL_ORG_PROJECT_SELECTOR) as $plain_text_obj) {
       $tmp = $plain_text_obj->outertext;
       $split = explode('(', $tmp);
       $commits = explode(' ', array_pop($split));
